@@ -7,7 +7,6 @@ URL = "https://www.inmuebles24.com/casas-en-venta-en-ciudad-de-mexico-pagina-"
 def get_house_data(scraper):
 
    # inmuebles24 shows estate on page index
-   # INDEX LIMIT: 1630
    for page in range(1, 10):
 
       # obtain the website   
