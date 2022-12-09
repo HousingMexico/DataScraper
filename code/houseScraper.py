@@ -8,11 +8,6 @@ def get_house_data(scraper):
         driver = scraper.get(URL + str(page) + '.html').text
         soup = BeautifulSoup(driver, 'html.parser')
         property_div = soup.find_all("div", {"class": "sc-ge2uzh-2 hWApJB"})
-
-        propiedades = []
-
-        for propiedad in property_div:
-            propiedades.append(propiedad)
-            print(propiedad)
-        return propiedades
+        for item in property_div:
+            print(item)
 #         propiedades_dict = {"Name": propiedades}
