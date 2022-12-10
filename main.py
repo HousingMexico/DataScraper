@@ -1,7 +1,10 @@
-from code import HousingScraper
+from code import HousingMexico
 
-scraper = HousingScraper()
+# initialize HousingMexico
+scraper = HousingMexico()
 
+# obtain housing data
 data = scraper.get_data()
 
+# debug!
 print(data)

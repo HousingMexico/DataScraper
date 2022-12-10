@@ -1,8 +1,9 @@
 import cloudscraper
-from code.houseScraper import get_house_data
+from code.scraper.house import get_house_data
 
 
-class HousingScraper:
+class HousingMexico:
+    
     def __init__(self):
         self.scraper = cloudscraper.create_scraper()
 

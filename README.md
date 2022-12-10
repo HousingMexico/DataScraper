@@ -17,6 +17,8 @@ DataScraper makes use of a wide stack of technologies:
 - Requests - Manage website access links
 - BeautifulSoup4 - Obtain specific data fields
 - MySQL - Store the information in a database
+- Pandas - Work with the data obtained
+
 
 ## About
 
@@ -29,6 +31,7 @@ With this repository we intend to collect data ahead of building a Machine Learn
 - [Jorge M](https://github.com/JorgeMAAI)
 
 Both authors are current highschool students working toward a brigher future where AI is part of the everyday life. For contact and inquires, please contact them directly.
+
 
 ## License
 
