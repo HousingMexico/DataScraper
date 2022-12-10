@@ -1,17 +1,21 @@
 import mysql.connector as mysql
 import env
 
-# initialize database
-def load_database():
+# database class
+class Database:
    
-   # start mysql connection
-   db = mysql.connect(
-      host = env.HOST,
-      user = env.USER,
-      password = env.PASSWORD
-   )
+   # initialze database
+   def __init__(self):
 
-   print(db)
+      # start mysql connection
+      db = mysql.connect(
+         host = env.HOST,
+         user = env.USER,
+         password = env.PASSWORD
+      )
+      return db
 
-   # return database instance
-   return db
+   # store a specific house
+   def storeHouseInformation(self, house):
+      print("DATABASE INSERT HOUSE")
+      print(house)

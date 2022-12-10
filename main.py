@@ -1,11 +1,8 @@
 from code import HousingMexico
-from database import load_database
 
 # initialize HousingMexico
-scraper = HousingMexico()
-
-# initialize database
-db = load_database()
+# param: should we use database? (True or False)
+scraper = HousingMexico(True)
 
 # obtain housing data
 data = scraper.get_data()
