@@ -29,5 +29,6 @@ def get_house_data(scraper):
       # In Inmuebles 24, data-to-posting is the attribute that contains the route to the individual page
       for indPage in individualPage:
           baseURL = 'https://www.inmuebles24.com'
-          driverInd = scraper.get(baseURL + str(indPage['data-to-posting']) + '.html')
+          print(indPage['data-to-posting'])
+          driverInd = scraper.get(baseURL + str(indPage['data-to-posting'])).text
           soupInd = BeautifulSoup(driverInd, 'html.parser')
