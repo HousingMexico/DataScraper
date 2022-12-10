@@ -11,7 +11,7 @@ class HousingMexico:
 
         # this creates the scraper
         self.scraper = cloudscraper.create_scraper()
-        print("scraper ok")
+        print("Scraper has been initialized")
 
         # set debug mode
         self.debug = debug

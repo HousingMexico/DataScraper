@@ -1,11 +1,10 @@
 from bs4 import BeautifulSoup
 import re
+
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/casas-en-venta-en-ciudad-de-mexico-pagina-'
 
 # obtain house information
-
-
 def get_house_data(scraper, debug, db):
 
     # inmuebles24 shows estate on page index
@@ -32,6 +31,7 @@ def get_house_data(scraper, debug, db):
             houseLink = baseURL + str(idividualHouse['data-to-posting'])
             print(f"LINK: {houseLink}") if debug == True else None
 
+
             # get the individual house website content
             houseWebsite = scraper.get(houseLink).text
 
@@ -43,17 +43,33 @@ def get_house_data(scraper, debug, db):
             houseNameH1 = soupInd.find("h1").text
             print(f"HOUSENAME: {houseNameH1}") if debug == True else None
             
-            # Obtain price (span) inside the div of the price item,
-            housePrice2 = soupInd.find("div", {"class":"price-items"}).find("span")
-            print(f"HOUSEPRICE: {housePrice2.text.strip()}") if debug == True else None
 
-            # TODO: remove all the spaces
+            # Obtain price (span) inside the div of the price item
+            housePrice = soupInd.find("div", {"class":"price-items"}).find("span")
+
+            # remove non-numbers (mainly MXN and numer commas)
+            housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
+            print(f"HOUSEPRICE: {housePrice}") if debug == True else None
+
+
+            # obtain house information: size, bedrooms, etc
             houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
-            for li in houseChar:
-                print(li.text.strip()) if debug == True else None
+            houseCharacteristics = []
+
+            # loop through items
+            for item in houseChar:
+                
+                # clean the string (full of whitespaces, a mess)
+                # remove every non-alphanumerican value
+                item = re.sub('[^0-9a-zA-ZñÑ]', '', item.text)
+
+                # append to characteristics array
+                houseCharacteristics.append(item)
+
+            print(houseCharacteristics)
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
-                "name": houseNameH1
+                "name": houseNameH1,
             }
             db.storeHouseInformation(houseData) if db != None else None
