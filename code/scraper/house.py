@@ -4,43 +4,48 @@ from bs4 import BeautifulSoup
 URL = 'https://www.inmuebles24.com/casas-en-venta-en-ciudad-de-mexico-pagina-'
 
 # obtain house information
-def get_house_data(scraper):
 
-   # inmuebles24 shows estate on page index
-   for page in range(1, 10):
 
-      # obtain the website   
-      driver = scraper.get(URL + str(page) + '.html').text
+def get_house_data(scraper, debug, db):
 
-      # parse HTML
-      soup = BeautifulSoup(driver, 'html.parser')
+    # inmuebles24 shows estate on page index
+    for page in range(1, 5):
 
-      # get all divs with the location of each house
-      # houseNameDiv = soup.find_all("div", {"class": "sc-ge2uzh-2 hWApJB"})
+        # obtain website where houses are listed (20 houses per page)
+        driver = scraper.get(URL + str(page) + '.html').text
 
-      # # Loop through all the divs and only retrieve the text without the tag
-      # for div in houseNameDiv:
-      #    print(div.text)
+        # parse main HTML
+        soup = BeautifulSoup(driver, 'html.parser')
 
-      # # It will find the divs of each property
-      individualPage = soup.find_all('div',{"class": "sc-i1odl-0 cYmZqs"})
+        # locate properties (individual divs)
+        individualDivs = soup.find_all('div', {"class": "sc-i1odl-0 cYmZqs"})
+        # it will extract the link to the individual page of each property
 
-      # It will extract the link to the individual page of each property
-      # In Inmuebles 24, data-to-posting is the attribute that contains the route to the individual page
-      for indPage in individualPage:
-          # Base URL where the route of the div will be added
-          baseURL = 'https://www.inmuebles24.com'
-          
-          # Debug
-          print(baseURL + str(indPage['data-to-posting']))
+        # loop through each div and obtain each individual house inforation
+        for idividualHouse in individualDivs:
 
-          # Get the url where the scraper will retreive the html source code
-          driverInd = scraper.get(baseURL + str(indPage['data-to-posting'])).text
+            # base URL where the route of the div will be added
+            baseURL = 'https://www.inmuebles24.com'
 
-          # BeautifulSoup html parser
-          soupInd = BeautifulSoup(driverInd, 'html.parser')
+            # data-to-posting is the attribute that contains the link of individual homes
+            # link of each individual house 
+            houseLink = baseURL + str(idividualHouse['data-to-posting'])
+            print(f"LINK: {houseLink}") if debug == True else None
 
-          houseNameH1 = soupInd.find_all("h1")
+            # get the individual house website content
+            houseWebsite = scraper.get(houseLink).text
 
-          for name in houseNameH1:
-              print(name.text)
+            # parse individual house website
+            soupInd = BeautifulSoup(houseWebsite, 'html.parser')
+
+            # this is now triggered inside the individual house website
+            # obtain the page title which has the name of the house
+            houseNameH1 = soupInd.find("h1").text
+            print(f"HOUSENAME: {houseNameH1}") if debug == True else None
+
+            # register the house in the database if parameter is True in root's main.py
+            houseData = {
+                "link": houseLink,
+                "name": houseNameH1
+            }
+            db.storeHouseInformation(houseData) if db != None else None
