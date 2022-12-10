@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-
+import re
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/casas-en-venta-en-ciudad-de-mexico-pagina-'
 
@@ -42,7 +42,15 @@ def get_house_data(scraper, debug, db):
             # obtain the page title which has the name of the house
             houseNameH1 = soupInd.find("h1").text
             print(f"HOUSENAME: {houseNameH1}") if debug == True else None
+            
+            # Obtain price (span) inside the div of the price item,
+            housePrice2 = soupInd.find("div", {"class":"price-items"}).find("span")
+            print(f"HOUSEPRICE: {housePrice2.text.strip()}") if debug == True else None
 
+            # TODO: remove all the spaces
+            houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
+            for li in houseChar:
+                print(li.text.strip()) if debug == True else None
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
