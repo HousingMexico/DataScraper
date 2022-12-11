@@ -97,7 +97,5 @@ def get_house_data(scraper, debug, db):
                 "name": houseNameH1,
                 "price": housePrice,
                 "details": houseCharacteristics
-            }
-            print(houseData)
-            
+            }            
             db.storeHouseInformation(houseData) if db != None else None
