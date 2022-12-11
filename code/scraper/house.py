@@ -61,15 +61,16 @@ def get_house_data(scraper, debug, db):
                 
                 # clean the string (full of whitespaces, a mess)
                 # remove every non-alphanumerican value
-                item = re.sub('[^0-9a-zA-ZñÑ]', '', item.text)
+                new = re.sub('[^0-9]', '', item.text)
 
                 # append to characteristics array
-                houseCharacteristics.append(item)
+                houseCharacteristics.append(new)
 
-            print(houseCharacteristics)
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
                 "name": houseNameH1,
+                "price": housePrice,
+                "details": houseCharacteristics
             }
             db.storeHouseInformation(houseData) if db != None else None

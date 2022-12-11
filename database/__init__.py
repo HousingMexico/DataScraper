@@ -29,6 +29,7 @@ class Database:
       details = {
          "name": house["name"],
          "link": house["link"],
+         "price": house["price"],
          "size": detailsArray[0],
          "built": detailsArray[1],
          "fullbathrooms": detailsArray[2],
