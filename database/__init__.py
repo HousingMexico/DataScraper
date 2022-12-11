@@ -21,8 +21,9 @@ class Database:
    def storeHouseInformation(self, house):
       
       # clean house details
-      # this array contains a specific, unchangable order
-      detailsArray = house["details"]
+      # this dictionary contains housing relevant data
+      # bedrooms? parking lot? construction size?
+      detailsDict = house["details"]
 
       # dump ALL house details
       # including name and link directly comming from the house dictionary
@@ -30,13 +31,13 @@ class Database:
          "name": house["name"],
          "link": house["link"],
          "price": house["price"],
-         "size": detailsArray[0],
-         "built": detailsArray[1],
-         "fullbathrooms": detailsArray[2],
-         "halfbathrooms": detailsArray[5],
-         "parking": detailsArray[3],
-         "bedrooms": detailsArray[4],
-         "years": detailsArray[6]
+         "size": detailsDict["size"],
+         "built": detailsDict["built"],
+         "fullbathrooms": detailsDict["fullbathrooms"],
+         "halfbathrooms": detailsDict["halfbathrooms"],
+         "parking": detailsDict["parking"],
+         "bedrooms": detailsDict["bedrooms"],
+         "years": detailsDict["years"]
       }
 
       print(details)
