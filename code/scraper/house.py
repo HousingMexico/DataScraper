@@ -54,25 +54,49 @@ def get_house_data(scraper, debug, db):
 
             # obtain house information: size, bedrooms, etc
             houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
-            houseCharacteristics = []
+            houseCharacteristics = {
+                "size": "", 
+                "built": "", 
+                "fullbathrooms": "", 
+                "parking": "", 
+                "bedrooms": "", 
+                "halfbathrooms": "", 
+                "years": "", 
+            }
 
             # loop through items
             for item in houseChar:
                 
                 # clean the string (full of whitespaces, a mess)
                 # remove every non-alphanumerican value
-                new = re.sub('[^0-9]', '', item.text)
+                new = re.sub('[^0-9A-Za-zÑñ]', '', item.text)
 
-                # append to characteristics array
-                houseCharacteristics.append(new)
+                # TODO: REFACTOR THIS CODE!!
+                
+                # list every possible house characteristic
+                characteristics = ["total", "construido", "baño", "estacionamiento", "recmara", "medio", "antigedad", "aestrenar"]
+                actualCharacteristics = ["size", "built", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "years", "years"]
+                
+                # loop through the characteristics
+                # get index for the actual characteristics' position
+                for i, char in enumerate(characteristics):
+
+                    # if a characteristic is found in the body, then:
+                    # 1. remove every NaN digit
+                    # 2. store it in the characteristics dictionary
+                    if char in new.lower():
+                        final = re.sub('[^0-9]', '', new)
+                        houseCharacteristics[actualCharacteristics[i]] = final
+                        # this final line sets a real item into the dictionary and not a miss-spelled word
+
+            print(houseCharacteristics) if debug == True else None
 
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
                 "name": houseNameH1,
                 "price": housePrice,
-                "details": houseCharacteristics,
-                "len": len(houseCharacteristics)
+                "details": houseCharacteristics
             }
             print(houseData)
             
