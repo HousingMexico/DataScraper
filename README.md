@@ -19,7 +19,6 @@ DataScraper makes use of a wide stack of technologies:
 - MySQL - Store the information in a database
 - Pandas - Work with the data obtained
 
-
 ## About
 
 With this repository we intend to collect data ahead of building a Machine Learning model, which requires a very wide array of real estate information, such as location, size, bedrooms, bathrooms, etcetera. The scraper collects that information, makes basic cleanup and then stores it. Once the information has been obtained, another project will make final data cleanup ahead of Model training.
@@ -31,7 +30,6 @@ With this repository we intend to collect data ahead of building a Machine Learn
 - [Jorge M](https://github.com/JorgeMAAI)
 
 Both authors are current highschool students working toward a brigher future where AI is part of the everyday life. For contact and inquires, please contact them directly.
-
 
 ## License
 
