@@ -1,17 +1,18 @@
 # CREATE DATABASE
-CREATE DATABASE HousingMexico;
+CREATE DATABASE housingmexico;
 
 # CREATE TABLE
 CREATE TABLE `houses` (
   `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `link` varchar(255) NOT NULL,
-  `size` int(9) unsigned NOT NULL,
-  `built` int(9) unsigned NOT NULL,
-  `fullbathrooms` int(9) unsigned NOT NULL,
-  `halfbathrooms` int(9) unsigned NOT NULL,
-  `parking` int(9) unsigned NOT NULL,
-  `bedrooms` int(9) unsigned NOT NULL,
-  `years` int(9) unsigned NOT NULL,
+  `price` int(12) unsigned,
+  `size` int(9) unsigned,
+  `built` int(9) unsigned,
+  `fullbathrooms` int(9) unsigned,
+  `halfbathrooms` int(9) unsigned,
+  `parking` int(9) unsigned,
+  `bedrooms` int(9) unsigned,
+  `years` int(9) unsigned,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
