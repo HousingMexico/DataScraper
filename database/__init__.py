@@ -7,14 +7,18 @@ class Database:
    # initialze database
    def __init__(self):
 
-      """ # start mysql connection
+      # start mysql connection
       db = mysql.connect(
          host = env.HOST,
          user = env.USER,
          password = env.PASSWORD
       )
-      return db """
-      print("Database hello world")
+      
+      if (db.is_connected()):
+         print("DATABASE IS CONNECTED")
+      else:
+         print("DATABASE CONNECTION UNSUCCESSFUL")
+
 
    # store a specific house
    # "house" parameter is a dictionary containing link and name

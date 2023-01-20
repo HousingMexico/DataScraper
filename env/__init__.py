@@ -3,4 +3,4 @@
 # MySQL informatoin
 HOST = "localhost"
 USER = "root"
-PASSWORD = "drew11"
+PASSWORD = "trew11"
