@@ -17,6 +17,7 @@ DataScraper makes use of a wide stack of technologies:
 - Requests - Manage website access links
 - BeautifulSoup4 - Obtain specific data fields
 - MySQL - Store the information in a database
+- Pandas - Work with the data obtained
 
 ## About
 
