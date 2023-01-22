@@ -49,8 +49,15 @@ def get_house_data(scraper, debug, db):
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
-            print(f"HOUSEPRICE: {housePrice}") if debug == True else None
+            print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
 
+            # It will find the hgroup attribute and extract the span where the location is located
+            location = soupInd.find("hgroup", {"class":"title-container"}).find("span").text
+            # Separate the zone from the city hall and remove whitespaces
+            zone = location.split(',')[1].lstrip()
+            city_hall = location.split(',')[2].lstrip()
+            print(f"Zone: {zone}") if debug == True else None
+            print(f"City hall: {city_hall}") if debug == True else None
 
             # obtain house information: size, bedrooms, etc
             houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
