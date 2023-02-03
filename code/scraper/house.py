@@ -53,11 +53,12 @@ def get_house_data(scraper, debug, db):
 
             # It will find the hgroup attribute and extract the span where the location is located
             location = soupInd.find("hgroup", {"class":"title-container"}).find("span").text
+            
             # Separate the zone from the city hall and remove whitespaces
             zone = location.split(',')[1].lstrip()
             city_hall = location.split(',')[2].lstrip()
-            print(f"Zone: {zone}") if debug == True else None
-            print(f"City hall: {city_hall}") if debug == True else None
+            print(f"Zone: {zone}")
+            print(f"City hall: {city_hall}")
 
             # obtain house information: size, bedrooms, etc
             houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
@@ -103,6 +104,8 @@ def get_house_data(scraper, debug, db):
                 "link": houseLink,
                 "name": houseNameH1,
                 "price": housePrice,
+                "zone": zone,
+                "city_hall": city_hall,
                 "details": houseCharacteristics
             }            
             db.storeHouseInformation(houseData) if db != None else None
