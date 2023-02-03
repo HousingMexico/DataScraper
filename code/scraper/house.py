@@ -57,8 +57,8 @@ def get_house_data(scraper, debug, db):
             # Separate the zone from the city hall and remove whitespaces
             zone = location.split(',')[1].lstrip()
             city_hall = location.split(',')[2].lstrip()
-            print(f"Zone: {zone}")
-            print(f"City hall: {city_hall}")
+            print(f"Zone: {zone}") if debug == True else None
+            print(f"City hall: {city_hall}") if debug == True else None
 
             # obtain house information: size, bedrooms, etc
             houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
