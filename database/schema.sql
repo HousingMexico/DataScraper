@@ -6,6 +6,8 @@ CREATE TABLE `houses` (
   `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `link` varchar(255) NOT NULL,
+  `zone` varchar(100) NOT NULL,
+  `city_hall` varchar(100) NOT NULL,
   `price` int(12) unsigned,
   `size` int(9) unsigned,
   `built` int(9) unsigned,
