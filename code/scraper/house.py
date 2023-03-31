@@ -23,11 +23,10 @@ def get_house_data(scraper, debug, db):
         for idividualHouse in individualDivs:
 
             # base URL where the route of the div will be added
-            baseURL = 'https://www.inmuebles24.com'
 
             # data-to-posting is the attribute that contains the link of individual homes
             # link of each individual house 
-            houseLink = baseURL + str(idividualHouse['data-to-posting'])
+            houseLink = URL + str(idividualHouse['data-to-posting'])
             print(f"LINK: {houseLink}") if debug == True else None
 
 
