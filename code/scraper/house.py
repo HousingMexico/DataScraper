@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 
 # URL to fetch information
-URL = 'https://www.inmuebles24.com/casas-en-venta-en-ciudad-de-mexico-pagina-'
+URL = 'https://www.inmuebles24.com/'
 
 # obtain house information
 def get_house_data(scraper, debug, db):
@@ -11,13 +11,12 @@ def get_house_data(scraper, debug, db):
     for page in range(1, 5):
 
         # obtain website where houses are listed (20 houses per page)
-        driver = scraper.get(URL + str(page) + '.html').text
-
+        driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
 
         # locate properties (individual divs)
-        individualDivs = soup.find_all('div', {"class": "sc-i1odl-0 cYmZqs"})
+        individualDivs = soup.find_all('div', {"class": "sc-i1odl-0 kJzCBs"})
         # it will extract the link to the individual page of each property
 
         # loop through each div and obtain each individual house inforation
