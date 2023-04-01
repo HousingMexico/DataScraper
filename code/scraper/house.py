@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 
 # URL to fetch information
-URL = 'https://www.inmuebles24.com/'
+URL = 'https://www.inmuebles24.com'
 
 # obtain house information
 def get_house_data(scraper, debug, db):
@@ -10,8 +10,9 @@ def get_house_data(scraper, debug, db):
     # inmuebles24 shows estate on page index
     for page in range(1, 5):
 
+        #TODO: Rewrite this pile of shit
         # obtain website where houses are listed (20 houses per page)
-        driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
+        driver = scraper.get(URL + '/casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
 
