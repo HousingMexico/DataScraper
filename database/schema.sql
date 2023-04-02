@@ -5,8 +5,8 @@ CREATE DATABASE housingmexico;
 CREATE TABLE `houses` (
   `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `link` varchar(255) NOT NULL,
   `zone` varchar(100) NOT NULL,
+  `link` varchar(255) NOT NULL,
   `city_hall` varchar(100) NOT NULL,
   `price` int(12) unsigned,
   `size` int(9) unsigned,
@@ -16,5 +16,13 @@ CREATE TABLE `houses` (
   `parking` int(9) unsigned,
   `bedrooms` int(9) unsigned,
   `years` int(9) unsigned,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+# CREATE TABLE
+CREATE TABLE `clustering` (
+  `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
+  `page` int(7) unsigned NOT NULL,
+  `amount` int(3) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

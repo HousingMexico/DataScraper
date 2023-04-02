@@ -25,9 +25,9 @@ class Database:
         self.db = db
         self.cursor = db.cursor()
 
+
     # store a specific house
     # "house" parameter is a dictionary containing link and name
-
     def storeHouseInformation(self, house):
 
         # clean house details
@@ -40,9 +40,9 @@ class Database:
         details = {
             "name": house["name"],
             "link": house["link"],
-            "price": house["price"],
             "zone": house["zone"],
             "city_hall": house["city_hall"],
+            "price": house["price"],
             "size": detailsDict["size"],
             "built": detailsDict["built"],
             "fullbathrooms": detailsDict["fullbathrooms"],
@@ -68,3 +68,39 @@ class Database:
         self.db.commit()
 
         print("[DATABASE] Value has been saved")
+
+
+    # store index of fully-looped page
+    def complete_page(self, page, amount):
+
+        # load SQL to insert page index 
+        # TODO: POTENTIAL SQL INJECTION!
+        SQL = (f"INSERT INTO clustering(page, amount) VALUES ({page}, {amount})")
+
+        # create new schema
+        self.cursor.execute(SQL)
+        
+        # save value into table
+        self.db.commit()
+
+        print("[DATABASE] Value has been saved")
+
+
+    # check that page index has not been yet run
+    def page_index_available(self, page):
+
+        # load SQL to select index
+        # TODO: POTENTIAL SQL INJECTION!
+        SQL = (f"SELECT * FROM clustering WHERE page = {page}")
+
+        # execute query
+        self.cursor.execute(SQL)
+
+        # obtain values
+        result = self.cursor.fetchone()
+        print(result)
+
+        if result == None:
+            return True
+        else:
+            return False

@@ -1,24 +1,39 @@
 from bs4 import BeautifulSoup
 import re
-
-# URL to fetch information
-URL = 'https://www.inmuebles24.com'
+import env # Inmuebles24 URL and subURL.
 
 # obtain house information
-def get_house_data(scraper, debug, db):
+def get_house_data(scraper, debug, db, batch):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 5):
+    # obtain pages to run
+    batch_start = batch * 10 # if batch = 1 then start = 10
+    batch_end = batch_start + env.CLUSTER_SIZE # if batch = 1 then end = 20
+    
+    # loop through the batch
+    for page in range(batch_start, batch_end):
+
+        # check that page is OK to be scraped
+        # stop the code if page has already been scrapped.
+        if db.page_index_available(page) == False:
+            break
+
+        # iterator to check if a page was correctly scraped
+        scraped = 0
 
         #TODO: Rewrite this pile of shit
         # obtain website where houses are listed (20 houses per page)
-        driver = scraper.get(URL + '/casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
+        driver = scraper.get(env.URL + env.MAIN_SUBURL + '-pagina-' + str(page) + '.html').text
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
 
         # locate properties (individual divs)
         individualDivs = soup.find_all('div', {"class": "sc-i1odl-0 kJzCBs"})
         # it will extract the link to the individual page of each property
+
+        # triggered if scrapper could not reach data
+        if individualDivs is None:
+            print("ERROR WHILE RUNNING.")
 
         # loop through each div and obtain each individual house inforation
         for idividualHouse in individualDivs:
@@ -27,7 +42,7 @@ def get_house_data(scraper, debug, db):
 
             # data-to-posting is the attribute that contains the link of individual homes
             # link of each individual house 
-            houseLink = URL + str(idividualHouse['data-to-posting'])
+            houseLink = env.URL + str(idividualHouse['data-to-posting'])
             print(f"LINK: {houseLink}") if debug == True else None
 
 
@@ -106,5 +121,14 @@ def get_house_data(scraper, debug, db):
                 "zone": zone,
                 "city_hall": city_hall,
                 "details": houseCharacteristics
-            }            
+            }
+            scraped += 1
             db.storeHouseInformation(houseData) if db != None else None
+        
+        # ONCE FOR LOOP HAS ENDED
+        # store the page which has been run.
+        if scraped >= 10:
+            print("FINISHED SCRAPING PAGE", page) if debug == True else None
+            db.complete_page(page, scraped) if db != None else None
+        else:
+            print("ERROR: Couldn't scrape page", page)
