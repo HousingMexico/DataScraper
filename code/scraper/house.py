@@ -15,32 +15,31 @@ def get_house_data(scraper, debug, db):
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
 
-        # locate properties (individual divs)
-        individualDivs = soup.find_all('div', {"class": "sc-i1odl-0 kJzCBs"})
-        # it will extract the link to the individual page of each property
+        # obtain specific house links
+        links = soup.find_all('a', {"class": "sc-i1odl-15 kozxjC"})
+        print(links)
 
         # loop through each div and obtain each individual house inforation
-        for idividualHouse in individualDivs:
+        for link in links:
 
             # base URL where the route of the div will be added
             baseURL = 'https://www.inmuebles24.com'
+            print("link", link)
 
             # data-to-posting is the attribute that contains the link of individual homes
             # link of each individual house 
-            houseLink = baseURL + str(idividualHouse['data-to-posting'])
+            houseLink = baseURL + link.get("href")
             print(f"LINK: {houseLink}") if debug == True else None
 
-
-            # get the individual house website content
-            houseWebsite = scraper.get(houseLink).text
-
             # parse individual house website
-            soupInd = BeautifulSoup(houseWebsite, 'html.parser')
+            house = scraper.get(houseLink).text
+            # parse main HTML
+            soupInd = BeautifulSoup(house, 'html.parser')
 
             # this is now triggered inside the individual house website
             # obtain the page title which has the name of the house
             houseNameH1 = soupInd.find("h1").text
-            print(f"HOUSENAME: {houseNameH1}") if debug == True else None
+            print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
             
 
             # Obtain price (span) inside the div of the price item
@@ -51,7 +50,7 @@ def get_house_data(scraper, debug, db):
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
 
             # It will find the hgroup attribute and extract the span where the location is located
-            location = soupInd.find("hgroup", {"class":"title-container"}).find("span").text
+            location = soupInd.find("p", {"class":"subtitle"}).text
             
             # Separate the zone from the city hall and remove whitespaces
             zone = location.split(',')[1].lstrip()
@@ -60,7 +59,7 @@ def get_house_data(scraper, debug, db):
             print(f"City hall: {city_hall}") if debug == True else None
 
             # obtain house information: size, bedrooms, etc
-            houseChar = soupInd.find("ul", {"class":"section-icon-features"}).find_all("li") 
+            houseCharFull = soupInd.find_all("div", {"class": "item label"})
             houseCharacteristics = {
                 "size": "", 
                 "built": "", 
@@ -70,6 +69,11 @@ def get_house_data(scraper, debug, db):
                 "halfbathrooms": "", 
                 "years": "", 
             }
+            print(houseCharFull)
+            
+            # CONTINUA AQUI!!
+            # EN EL DIV "ITEM" HAY OTRO DIV "LABEL" Y AHI ES DONDE ESTA TODA LA INFO
+            return
 
             # loop through items
             for item in houseChar:
