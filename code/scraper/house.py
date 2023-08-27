@@ -8,85 +8,99 @@ URL = 'https://www.inmuebles24.com/'
 def get_house_data(scraper, debug, db):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 5):
+    for page in range(1, 2):
 
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
+        
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
 
-        # obtain specific house links
-        links = soup.find_all('a', {"class": "sc-i1odl-15 kozxjC"})
-        print(links)
+        # obtain specific house divs
+        houses = soup.find_all("div", {"class": "sc-i1odl-2 kMrxDq"})
 
         # loop through each div and obtain each individual house inforation
-        for link in links:
-
-            # base URL where the route of the div will be added
-            baseURL = 'https://www.inmuebles24.com'
-            print("link", link)
-
-            # data-to-posting is the attribute that contains the link of individual homes
-            # link of each individual house 
-            houseLink = baseURL + link.get("href")
-            print(f"LINK: {houseLink}") if debug == True else None
-
-            # parse individual house website
-            house = scraper.get(houseLink).text
-            # parse main HTML
-            soupInd = BeautifulSoup(house, 'html.parser')
-
-            # this is now triggered inside the individual house website
-            # obtain the page title which has the name of the house
-            houseNameH1 = soupInd.find("h1").text
-            print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
+        for house in houses:
             
+            # run in try-except because if UL is not found it will raise an exception
+            try:
+                # check if house is individual or complex (we do not want complexes)
+                # basically: complexes have an 'ul' tah saying with the string "un."
+                # if that string is found, break the execution
+                houseType = house.find('ul', {'class': 'sc-i1odl-16 eemioV'})
+                complex = houseType.find("li")
+                index = str(complex).index("un.")
+                print("House is NOT an individual home") if debug == True else None
+                continue # starts the next iteration
+            except:
+                pass # ignore exception
+            
+            # at this point, complex houses have been removed
 
-            # Obtain price (span) inside the div of the price item
-            housePrice = soupInd.find("div", {"class":"price-items"}).find("span")
+            # obtain house name
+            houseName = house.find("div", {"class": "sc-ge2uzh-0 eXwAuU"}).text
+            print(f"HOUSENAME: {houseName.strip()}") if debug == True else None
 
+            # obtain house price
+            housePrice = house.find("div", {"class": "sc-12dh9kl-4 hbUMaO"})
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
 
-            # It will find the hgroup attribute and extract the span where the location is located
-            location = soupInd.find("p", {"class":"subtitle"}).text
-            
+            # obtain house location
+            location = house.find("div", {"class":"sc-ge2uzh-2 jneaYd"}).text
+            print(location)
             # Separate the zone from the city hall and remove whitespaces
-            zone = location.split(',')[1].lstrip()
-            city_hall = location.split(',')[2].lstrip()
-            print(f"Zone: {zone}") if debug == True else None
-            print(f"City hall: {city_hall}") if debug == True else None
+            zone = location.split(',')[0].lstrip()
+            city_hall = location.split(',')[1].lstrip()
+            print(f"Zone (Colonia): {zone}") if debug == True else None
+            print(f"City hall (Alcaldía): {city_hall}") if debug == True else None
 
             # obtain house information: size, bedrooms, etc
-            houseCharFull = soupInd.find_all("div", {"class": "item label"})
+            # 1. obtener el div que tiene todos los spans
+            # 2. obtener los spans en una lista
+            houseCharDiv = house.find("div", {"class": "sc-1uhtbxc-0 eTeBuc"})
+            houseCharSpans = houseCharDiv.find_all("span")
+
+            # ahora: en cada span, hay una imagen con el logo y otro span diferente con el label
+            # en el try, filtramos la imagen y enn caso de que sí la haya no hacer nada
+            chars = []
+            for span in houseCharSpans:
+                try:
+                    i = str(span).index("img")
+                    pass
+                except:
+                    chars.append(span)
+                    pass
+            print("SPANS", houseCharSpans)
+            print("AFTER", chars)
+            
+            # make a list with every possible characteristic
             houseCharacteristics = {
-                "size": "", 
-                "built": "", 
+                "land": "", 
+                "construction": "", 
                 "fullbathrooms": "", 
                 "parking": "", 
                 "bedrooms": "", 
                 "halfbathrooms": "", 
                 "years": "", 
             }
-            print(houseCharFull)
-            
-            # CONTINUA AQUI!!
-            # EN EL DIV "ITEM" HAY OTRO DIV "LABEL" Y AHI ES DONDE ESTA TODA LA INFO
+
             return
 
-            # loop through items
-            for item in houseChar:
+            # loop through characteristics
+            for item in chars:
                 
                 # clean the string (full of whitespaces, a mess)
                 # remove every non-alphanumerican value
                 new = re.sub('[^0-9A-Za-zÑñ]', '', item.text)
+                print("new", new)
 
                 # TODO: REFACTOR THIS CODE!!
                 
                 # list every possible house characteristic
                 characteristics = ["total", "construido", "baño", "estacionamiento", "recmara", "medio", "antigedad", "aestrenar"]
-                actualCharacteristics = ["size", "built", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "years", "years"]
+                actualCharacteristics = ["land", "construction", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "years", "years"]
                 
                 # loop through the characteristics
                 # get index for the actual characteristics' position
@@ -103,12 +117,14 @@ def get_house_data(scraper, debug, db):
             print(houseCharacteristics) if debug == True else None
 
             # register the house in the database if parameter is True in root's main.py
+            #"link": houseLink,
             houseData = {
-                "link": houseLink,
-                "name": houseNameH1,
+                "name": houseName,
                 "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
                 "details": houseCharacteristics
             }            
             db.storeHouseInformation(houseData) if db != None else None
+            print(houseData)
+            return
