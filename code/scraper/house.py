@@ -16,7 +16,7 @@ def get_house_data(scraper, debug, db):
         soup = BeautifulSoup(driver, 'html.parser')
 
         # obtain specific house links
-        links = soup.find_all('a', {"class": "sc-i1odl-11 kptTyQ"})
+        links = soup.find_all('a', {"class": "sc-i1odl-12 EWzaP"})
 
         # loop through each div and obtain each individual house inforation
         for link in links:
@@ -95,8 +95,8 @@ def get_house_data(scraper, debug, db):
                 # TODO: REFACTOR THIS CODE!!
                 
                 # list every possible house characteristic
-                characteristics = ["total", "construido", "baños", "estacionamiento", "recmara", "mediobaño", "antigedad", "aestrenar"]
-                actualCharacteristics = ["size", "built", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "years", "years"]
+                characteristics = ["total", "construido", "baños", "estacionamiento", "recmara", "mediobaño", "mediosbaños", "antigedad", "aestrenar"]
+                actualCharacteristics = ["size", "built", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "halfbathrooms", "years", "years"]
                 
                 # loop through the characteristics
                 # get index for the actual characteristics' position
