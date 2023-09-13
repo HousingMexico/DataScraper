@@ -51,7 +51,6 @@ class Database:
             "bedrooms": detailsDict["bedrooms"],
             "years": detailsDict["years"]
         }
-        print(details)
 
         # prepare SQL statement
         SQL = (

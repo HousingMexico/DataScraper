@@ -7,7 +7,7 @@ from database import Database
 class HousingMexico:
     
     # initialize HousingMexico
-    def __init__(self, debug = True, useDB = False):
+    def __init__(self, debug = True, useDB = False, longDescriptions = False):
 
         # this creates the scraper
         self.scraper = cloudscraper.create_scraper()
@@ -15,6 +15,9 @@ class HousingMexico:
 
         # set debug mode
         self.debug = debug
+
+        # set long descriptions
+        self.longDescriptions = longDescriptions
 
         # set if db is to be used
         self.db = Database() if useDB == True else None
@@ -24,4 +27,4 @@ class HousingMexico:
     def get_data(self):
 
         # self.db is database is accepted else None
-        get_house_data(self.scraper, self.debug, self.db)
+        get_house_data(self.scraper, self.debug, self.db, self.longDescriptions)
