@@ -5,10 +5,10 @@ import re
 URL = 'https://www.inmuebles24.com/'
 
 # obtain house information
-def get_house_data(scraper, debug, db):
+def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 4):
+    for page in range(1, 50):
 
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
@@ -115,6 +115,11 @@ def get_house_data(scraper, debug, db):
                 continue # skip to next house (avoid database insertion)
             
             print(houseCharacteristics) if debug == True else None
+
+            # obtain long house description
+            """ if longDescriptions == True:
+                descriptionDirty = soupInd.find("div", id="longDescription")
+                print(descriptionDirty) """
 
             # register the house in the database if parameter is True in root's main.py
             houseData = {
