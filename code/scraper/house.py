@@ -97,9 +97,9 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 # TODO: REFACTOR THIS CODE!!
                 
                 # list every possible house characteristic
-                characteristics = ["total", "construido", "baños", "estacionamiento", "recmara", "mediobaño", "mediosbaños", "antigedad", "aestrenar"]
+                characteristics = ["tot", "cub", "baños", "estac", "rec", "mediobaño", "mediosbaños", "os", "aestrenar"]
                 actualCharacteristics = ["size", "built", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "halfbathrooms", "years", "years"]
-                
+
                 # loop through the characteristics
                 # get index for the actual characteristics' position
                 for i, char in enumerate(characteristics):
