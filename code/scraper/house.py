@@ -40,15 +40,17 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
             
             # obtain price (span) inside the div of the price item
-            housePrice = soupInd.find("div", {"class":"price-items"}).find("span")
+            housePrice = soupInd.find("div", {"class":"price-value"}).find("span")
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
 
             # It will find the hgroup attribute and extract the span where the location is located
-            locationDirty = soupInd.find("h2", {"class":"title-location"}).find("span")
-            location = str(locationDirty).replace("<span>", "").replace("</span>", "")
+            locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
+            location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
+
+            print(location) if debug == True else None
 
             # Separate the zone from the city hall and remove whitespaces
             zone = location.split(',')[1].lstrip()
