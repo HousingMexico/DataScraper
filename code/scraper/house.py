@@ -46,6 +46,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
 
+            # General characteristics
+            generalCharacteristics = soupInd.find_all("span", {"class": re.compile('^sc-', re.IGNORECASE)})
+            print(generalCharacteristics)
+
             # It will find the hgroup attribute and extract the span where the location is located
             locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
             location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
