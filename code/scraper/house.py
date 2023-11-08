@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import re
+import json
+import ast
 
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
@@ -45,11 +47,16 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
+            
+            # Find generalFeatures
+            dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
 
-            # General characteristics
-            generalCharacteristics = soupInd.find_all("span", {"class": re.compile('^sc-', re.IGNORECASE)})
-            print(generalCharacteristics)
+            groupedData = re.search(r'(\{.*\})', dataSc).group(1)
+            jsonData = json.loads(groupedData)
 
+            generalFeatures = jsonData.get('generalFeatures', {})
+            print(generalFeatures)
+            
             # It will find the hgroup attribute and extract the span where the location is located
             locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
             location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
