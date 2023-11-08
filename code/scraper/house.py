@@ -49,18 +49,14 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
             
             # Find generalFeatures
-            sc = soupInd.find("script", text=re.compile('const isPreview = false;')).text
-            pattern = r"const avisoInfo = ({[\s\S]*?})"
+            dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
 
-            match = re.search(pattern, sc)
+            groupedData = re.search(r'(\{.*\})', dataSc).group(1)
+            jsonData = json.loads(groupedData)
 
-            if match:
-                print("yes")
-                avisoInfoContent = match.group(1)
-                print(avisoInfoContent)
-            else:
-                print("no")
-
+            generalFeatures = jsonData.get('generalFeatures', {})
+            print(generalFeatures)
+            
             # It will find the hgroup attribute and extract the span where the location is located
             locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
             location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
