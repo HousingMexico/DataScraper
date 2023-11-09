@@ -55,7 +55,14 @@ def get_house_data(scraper, debug, db, longDescriptions):
             jsonData = json.loads(groupedData)
 
             generalFeatures = jsonData.get('generalFeatures', {})
-            print(generalFeatures)
+            generalCharacteristics = generalFeatures.get('Características generales', {})
+
+            for value in generalCharacteristics.values():
+                label = value.get('label', None)
+                if label is not None:
+                    print(f"Label: {label}")
+
+            print(generalCharacteristics)
             
             # It will find the hgroup attribute and extract the span where the location is located
             locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
