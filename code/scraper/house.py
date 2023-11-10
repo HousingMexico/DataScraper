@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import re
 import json
-import ast
 
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
