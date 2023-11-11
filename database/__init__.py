@@ -58,7 +58,7 @@ class Database:
 
         # prepare SQL statement
         SQL = (
-            "INSERT INTO houses(name, link, zone, city_hall, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years)"
+            "INSERT INTO houses(name, link, zone, city_hall, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years, characteristics, amenities, services, exteriors)"
             "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''))"
         )
         DATA = (details["name"], details["link"], details["zone"], details["city_hall"], details["price"], details["size"], details["built"],

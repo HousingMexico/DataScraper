@@ -66,9 +66,9 @@ def get_house_data(scraper, debug, db, longDescriptions):
             #    if label is not None:
             #        print(f"Label: {label}")
 
-            generalCharacteristics = []
-            services = []
-            amenidades = []
+            generalCharacteristics = [] 
+            services = [] 
+            amenidades = [] 
             exteriors = []
 
             # Will loop through the main categories ("caracteristicas..", "Servicios", etc) and subcategories is the dictionary that contains the subcategoriesc
@@ -177,9 +177,9 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "zone": zone,
                 "city_hall": city_hall,
                 "details": houseCharacteristics,
-                "characteristics": generalCharacteristics,
-                "amenities": amenidades,
-                "services": services,
-                "exteriors": exteriors,
+                "characteristics": str(generalCharacteristics),
+                "amenities": str(amenidades),
+                "services": str(services),
+                "exteriors": str(exteriors),
             }            
             db.storeHouseInformation(houseData) if db != None else None

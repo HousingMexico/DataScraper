@@ -1,6 +1,6 @@
 # CREATE DATABASE
 CREATE DATABASE housingmexico;
-
+use housingmexico
 # CREATE TABLE
 CREATE TABLE `houses` (
   `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
@@ -16,9 +16,9 @@ CREATE TABLE `houses` (
   `parking` int(9) unsigned,
   `bedrooms` int(9) unsigned,
   `years` int(9) unsigned,
-  `characteristics` varchar(150),
-  `amenities` varchar(150),
-  `services` varchar(150),
-  `exteriors` varchar(150),
+  `characteristics` varchar(450),
+  `amenities` varchar(350),
+  `services` varchar(350),
+  `exteriors` varchar(350),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
