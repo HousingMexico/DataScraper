@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import re
 import json
-import ast
 
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
@@ -55,7 +54,43 @@ def get_house_data(scraper, debug, db, longDescriptions):
             jsonData = json.loads(groupedData)
 
             generalFeatures = jsonData.get('generalFeatures', {})
-            print(generalFeatures)
+
+            # OLD CODE, might be useful
+            # generalCharacteristics = generalFeatures.get('Características generales', {})
+            # services = generalFeatures.get('Servicios', {})
+            # amenidades = generalFeatures.get('Amenidades', {})
+            # exteriores = generalFeatures.get('Exteriores', {})
+
+            # for value in generalCharacteristics.values():
+            #    label = value.get('label', None)
+            #    if label is not None:
+            #        print(f"Label: {label}")
+
+            generalCharacteristics = [] 
+            services = [] 
+            amenidades = [] 
+            exteriors = []
+
+            # Will loop through the main categories ("caracteristicas..", "Servicios", etc) and subcategories is the dictionary that contains the subcategoriesc
+            for category, subcategories in generalFeatures.items():
+                for subcategories, values in subcategories.items():
+                    # Subcategories are the ids, and values are label, featureID, etc.
+                    label = values.get('label', None)
+                    if label is not None:
+                        if category == "Características generales":
+                            generalCharacteristics.append(label)
+                        elif category == "Servicios":
+                            services.append(label)
+                        elif category == "Amenidades":
+                            amenidades.append(label)
+                        elif category == "Exteriores":
+                            exteriors.append(label)
+
+            print(f"Características generales", generalCharacteristics) if debug == True else None
+            print(f"Servicios", services) if debug == True else None
+            print(f"Amenidades", amenidades) if debug == True else None
+            print(f"Exteriors", exteriors) if debug == True else None
+
             
             # It will find the hgroup attribute and extract the span where the location is located
             locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
@@ -141,6 +176,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
-                "details": houseCharacteristics
+                "details": houseCharacteristics,
+                "characteristics": str(generalCharacteristics),
+                "amenities": str(amenidades),
+                "services": str(services),
+                "exteriors": str(exteriors),
             }            
             db.storeHouseInformation(houseData) if db != None else None
