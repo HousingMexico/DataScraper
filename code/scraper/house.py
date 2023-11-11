@@ -176,6 +176,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
-                "details": houseCharacteristics
+                "details": houseCharacteristics,
+                "characteristics": generalCharacteristics,
+                "amenities": amenidades,
+                "services": services,
+                "exteriors": exteriors,
             }            
             db.storeHouseInformation(houseData) if db != None else None

@@ -49,16 +49,21 @@ class Database:
             "halfbathrooms": detailsDict["halfbathrooms"],
             "parking": detailsDict["parking"],
             "bedrooms": detailsDict["bedrooms"],
-            "years": detailsDict["years"]
+            "years": detailsDict["years"],
+            "characteristics": house["characteristics"],
+            "amenities": house["amenities"],
+            "services": house["services"],
+            "exteriors": house["exteriors"]
         }
 
         # prepare SQL statement
         SQL = (
             "INSERT INTO houses(name, link, zone, city_hall, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years)"
-            "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''))"
+            "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''))"
         )
         DATA = (details["name"], details["link"], details["zone"], details["city_hall"], details["price"], details["size"], details["built"],
-                details["fullbathrooms"], details["halfbathrooms"], details["parking"], details["bedrooms"], details["years"])
+                details["fullbathrooms"], details["halfbathrooms"], details["parking"], details["bedrooms"], details["years"], details["characteristics"],
+                details["amenities"], details["services"], details["exteriors"])
 
         # on Mongoose, this is new Schema()
         self.cursor.execute(SQL, DATA)
