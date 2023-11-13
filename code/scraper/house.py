@@ -9,7 +9,9 @@ URL = 'https://www.inmuebles24.com/'
 def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 50):
+    for page in range(1, 30):
+
+        print(page)
 
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
@@ -91,7 +93,22 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"Amenidades", amenidades) if debug == True else None
             print(f"Exteriors", exteriors) if debug == True else None
 
+            # Latitude and longitud
+
+            mapImg = soupInd.find("img", {"id": "static-map"})
+            print(mapImg)
+            src = mapImg.get('src')
+
+            startOfC = src.find('center=') + len('center')
+            endOfC = src.find('&', startOfC)
+
+            coordinates = src[startOfC:endOfC]
+            latitude, longitude = coordinates.split(',')
+            print("Latitude: ", latitude)
+            print("Longitude: ", longitude)
+
             
+
             # It will find the hgroup attribute and extract the span where the location is located
             locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
             location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
@@ -176,6 +193,8 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
+                "latitude": latitude,
+                "longitude": longitude,
                 "details": houseCharacteristics,
                 "characteristics": str(generalCharacteristics),
                 "amenities": str(amenidades),
