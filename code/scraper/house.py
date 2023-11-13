@@ -9,7 +9,7 @@ URL = 'https://www.inmuebles24.com/'
 def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 30):
+    for page in range(1, 100):
 
         print(page)
 
@@ -40,6 +40,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # this is now triggered inside the individual house website
             # obtain the page title which has the name of the house
             houseNameH1 = soupInd.find("h1").text
+            houseNameClean = houseNameH1.replace(" ", "")
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
             
             # obtain price (span) inside the div of the price item
@@ -98,20 +99,27 @@ def get_house_data(scraper, debug, db, longDescriptions):
             mapImg = soupInd.find("img", {"id": "static-map"})
             print(mapImg)
             src = mapImg.get('src')
+            try:
+                startOfC = src.find('center=') + len('center')
+                endOfC = src.find('&', startOfC)
 
-            startOfC = src.find('center=') + len('center')
-            endOfC = src.find('&', startOfC)
-
-            coordinates = src[startOfC:endOfC]
-            latitude, longitude = coordinates.split(',')
-            print("Latitude: ", latitude)
-            print("Longitude: ", longitude)
+                coordinates = src[startOfC:endOfC]
+                latitude, longitude = coordinates.split('&')[0].split(',')
+                latitudeClean = latitude.lstrip('=')
+                print("Latitude: ", latitudeClean)
+                print("Longitude: ", longitude)
+            except:
+                latitudeClean = 0
+                longitude = 0
 
             
 
             # It will find the hgroup attribute and extract the span where the location is located
-            locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
-            location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
+            try: 
+                locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
+                location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
+            except:
+                pass
 
             print(location) if debug == True else None
 
@@ -189,11 +197,11 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
-                "name": houseNameH1,
+                "name": houseNameClean,
                 "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
-                "latitude": latitude,
+                "latitude": latitudeClean,
                 "longitude": longitude,
                 "details": houseCharacteristics,
                 "characteristics": str(generalCharacteristics),
@@ -201,4 +209,8 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "services": str(services),
                 "exteriors": str(exteriors),
             }            
-            db.storeHouseInformation(houseData) if db != None else None
+            try:
+                db.storeHouseInformation(houseData) if db != None else None
+            except:
+                pass
+           
