@@ -28,7 +28,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             baseURL = 'https://www.inmuebles24.com'
 
             # data-to-posting is the attribute that contains the link of individual homes
-            # link of each individual house 
+            # link of each individual house
             houseLink = baseURL + link.get("href")
             print(f"LINK: {houseLink}") if debug == True else None
 
@@ -40,16 +40,15 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # this is now triggered inside the individual house website
             # obtain the page title which has the name of the house
             houseNameH1 = soupInd.find("h1").text
-            houseNameClean = houseNameH1.replace(" ", "")
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
-            
+
             # obtain price (span) inside the div of the price item
             housePrice = soupInd.find("div", {"class":"price-value"}).find("span")
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
-            print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
-            
+            print(f"HOUSEPRICE: {housePrice}") if debug == True else None
+
             # Find generalFeatures
             dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
 
@@ -69,9 +68,9 @@ def get_house_data(scraper, debug, db, longDescriptions):
             #    if label is not None:
             #        print(f"Label: {label}")
 
-            generalCharacteristics = [] 
-            services = [] 
-            amenidades = [] 
+            generalCharacteristics = []
+            services = []
+            amenidades = []
             exteriors = []
 
             # Will loop through the main categories ("caracteristicas..", "Servicios", etc) and subcategories is the dictionary that contains the subcategoriesc
@@ -112,10 +111,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 latitudeClean = 0
                 longitude = 0
 
-            
+
 
             # It will find the hgroup attribute and extract the span where the location is located
-            try: 
+            try:
                 locationDirty = soupInd.find("div", {"class":"section-location-property"}).find("h4")
                 location = str(locationDirty).replace("<h4>", "").replace("</h4>", "")
             except:
@@ -132,13 +131,13 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # obtain house information: size, bedrooms, etc
             houseChar = soupInd.find_all("li", {"class": "icon-feature"})
             houseCharacteristics = {
-                "size": "", 
-                "built": "", 
-                "fullbathrooms": "", 
-                "parking": "", 
-                "bedrooms": "", 
-                "halfbathrooms": "", 
-                "years": "", 
+                "size": "",
+                "built": "",
+                "fullbathrooms": "",
+                "parking": "",
+                "bedrooms": "",
+                "halfbathrooms": "",
+                "years": "",
             }
 
             # set a local variable to see if house is complex or not (will use later)
@@ -150,7 +149,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 # clean the string (full of whitespaces, a mess)
                 # remove every non-alphanumerican value
                 new = re.sub('[^0-9A-Za-zÑñ]', '', item.text)
-                
+
                 # VERIFY IF HOUSE IS A COMPLEX OR SINGLE HOUSE
                 # run in try-except because if UL is not found it will raise an exception
                 try:
@@ -166,7 +165,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
                     pass # ignore exception
 
                 # TODO: REFACTOR THIS CODE!!
-                
+
                 # list every possible house characteristic
                 characteristics = ["tot", "cub", "baños", "estac", "rec", "mediobaño", "mediosbaños", "os", "aestrenar"]
                 actualCharacteristics = ["size", "built", "fullbathrooms", "parking", "bedrooms", "halfbathrooms", "halfbathrooms", "years", "years"]
@@ -180,13 +179,15 @@ def get_house_data(scraper, debug, db, longDescriptions):
                     # 2. store it in the characteristics dictionary
                     if char in new.lower():
                         final = re.sub('[^0-9]', '', new)
-                        houseCharacteristics[actualCharacteristics[i]] = final
+                        if final == "A estrenar":
+                            final = 0
+                        houseCharacteristics[actualCharacteristics[i]] = final if final else 0
                         # this final line sets a real item into the dictionary and not a miss-spelled word
 
             if isComplex[0] == True:
                 print("Destroyed house iteration") if debug == True else None
                 continue # skip to next house (avoid database insertion)
-            
+
             print(houseCharacteristics) if debug == True else None
 
             # obtain long house description
@@ -197,7 +198,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
-                "name": houseNameClean,
+                "name": houseNameH1,
                 "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
@@ -208,9 +209,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "amenities": str(amenidades),
                 "services": str(services),
                 "exteriors": str(exteriors),
-            }            
+            }
             try:
                 db.storeHouseInformation(houseData) if db != None else None
             except:
                 pass
+
            
