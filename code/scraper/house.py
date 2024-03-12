@@ -13,13 +13,14 @@ def get_house_data(scraper, debug, db, longDescriptions):
 
         print(page)
 
+        fullURL = URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html'
+        print(fullURL)
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
-
         # obtain specific house links
-        links = soup.find_all('a', {"class": "sc-i1odl-12 EWzaP"})
+        links = soup.find_all('div', {"class": "sc-i1odl-0 dreQQz"})
 
         # loop through each div and obtain each individual house inforation
         for link in links:
@@ -29,7 +30,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
 
             # data-to-posting is the attribute that contains the link of individual homes
             # link of each individual house
-            houseLink = baseURL + link.get("href")
+            houseLink = baseURL + link.get("data-to-posting")
             print(f"LINK: {houseLink}") if debug == True else None
 
             # parse individual house website
