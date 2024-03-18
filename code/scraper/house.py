@@ -9,13 +9,9 @@ URL = 'https://www.inmuebles24.com/'
 def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-<<<<<<< Updated upstream
-    for page in range(1, 50):
-=======
     for page in range(1, 3):
 
         fullURL = URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html'
->>>>>>> Stashed changes
 
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
@@ -52,16 +48,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
             priceIsDollars = True if tempHousePrice.text.find("USD") != -1 else False
 
             # remove non-numbers (mainly MXN and numer commas)
-<<<<<<< Updated upstream
-            housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
-            print(f"HOUSEPRICE: {housePrice}") if debug == True else None 
-            
-=======
             tempHousePrice = re.sub('[^0-9]', '', tempHousePrice.text.strip())
             housePrice = int(tempHousePrice) * 18 if priceIsDollars == True else tempHousePrice
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None
 
->>>>>>> Stashed changes
             # Find generalFeatures
             dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
 
@@ -192,13 +182,9 @@ def get_house_data(scraper, debug, db, longDescriptions):
                     # 2. store it in the characteristics dictionary
                     if char in new.lower():
                         final = re.sub('[^0-9]', '', new)
-<<<<<<< Updated upstream
-                        houseCharacteristics[actualCharacteristics[i]] = final
-=======
                         if final == "A estrenar":
                             final = 0
                         houseCharacteristics[actualCharacteristics[i]] = int(final) if final else 0
->>>>>>> Stashed changes
                         # this final line sets a real item into the dictionary and not a miss-spelled word
 
             if isComplex[0] == True:
@@ -226,11 +212,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "amenities": str(amenidades),
                 "services": str(services),
                 "exteriors": str(exteriors),
-<<<<<<< Updated upstream
             }            
             db.storeHouseInformation(houseData) if db != None else None
-=======
-            }
+
+            
             try:
                 print(houseData) if debug == True else None
                 db.storeHouseInformation(houseData) if db != None else None
