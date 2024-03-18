@@ -43,6 +43,8 @@ class Database:
             "price": house["price"],
             "zone": house["zone"],
             "city_hall": house["city_hall"],
+            "latitude": house["latitude"],
+            "longitude": house["longitude"],
             "size": detailsDict["size"],
             "built": detailsDict["built"],
             "fullbathrooms": detailsDict["fullbathrooms"],
@@ -58,10 +60,10 @@ class Database:
 
         # prepare SQL statement
         SQL = (
-            "INSERT INTO houses(name, link, zone, city_hall, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years, characteristics, amenities, services, exteriors)"
-            "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''))"
+            "INSERT INTO houses(name, link, zone, city_hall, latitude, longitude, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years, characteristics, amenities, services, exteriors)"
+            "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''))"
         )
-        DATA = (details["name"], details["link"], details["zone"], details["city_hall"], details["price"], details["size"], details["built"],
+        DATA = (details["name"], details["link"], details["zone"], details["city_hall"], details["latitude"], details["longitude"], details["price"], details["size"], details["built"],
                 details["fullbathrooms"], details["halfbathrooms"], details["parking"], details["bedrooms"], details["years"], details["characteristics"],
                 details["amenities"], details["services"], details["exteriors"])
 
