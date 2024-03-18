@@ -14,7 +14,7 @@ class Database:
             host=env.HOST,
             user=env.USER,
             password=env.PASSWORD,
-            database=env.DATABASE
+            database=env.DATABASE,
         )
 
         if (db.is_connected()):
@@ -68,9 +68,13 @@ class Database:
                 details["amenities"], details["services"], details["exteriors"])
 
         # on Mongoose, this is new Schema()
-        self.cursor.execute(SQL, DATA)
+        try:
+            self.cursor.execute(SQL, DATA)
 
-        # on Mongoose, this is data.save()
-        self.db.commit()
+            # on Mongoose, this is data.save()
+            self.db.commit()
+            print("[DATABASE] Value has been saved")
 
-        print("[DATABASE] Value has been saved")
+        except Exception as e:
+            print(e)
+
