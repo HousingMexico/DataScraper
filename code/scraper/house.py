@@ -11,14 +11,15 @@ def get_house_data(scraper, debug, db, longDescriptions):
     # inmuebles24 shows estate on page index
     for page in range(1, 3):
 
-        fullURL = URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html'
-
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
+
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
+
         # obtain specific house links
         links = soup.find_all('div', class_="PostingCardLayout-sc-i1odl-0")
+        
         # loop through each div and obtain each individual house inforation
         for link in links:
 
@@ -32,6 +33,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
 
             # parse individual house website
             house = scraper.get(houseLink).text
+
             # parse main HTML
             soupInd = BeautifulSoup(house, 'html.parser')
 
@@ -41,23 +43,19 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
 
             # obtain price (span) inside the div of the price item
-            tempHousePrice = soupInd.find("div", {"class":"price-value"}).find("span")
-
-            # check if price is in dollars
-            priceIsDollars = True if tempHousePrice.text.find("USD") != -1 else False
+            housePrice = soupInd.find("div", {"class":"price-value"}).find("span")
 
             # remove non-numbers (mainly MXN and numer commas)
-            tempHousePrice = re.sub('[^0-9]', '', tempHousePrice.text.strip())
-            housePrice = int(tempHousePrice) * 18 if priceIsDollars == True else tempHousePrice
+            housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None
 
             # Find generalFeatures
-            dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
+            # dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
 
-            groupedData = re.search(r'(\{.*\})', dataSc).group(1)
-            jsonData = json.loads(groupedData)
+            # groupedData = re.search(r'(\{.*\})', dataSc).group(1)
+            # jsonData = json.loads(groupedData)
 
-            generalFeatures = jsonData.get('generalFeatures', {})
+            # generalFeatures = jsonData.get('generalFeatures', {})
 
             # OLD CODE, might be useful
             # generalCharacteristics = generalFeatures.get('Características generales', {})
@@ -70,7 +68,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             #    if label is not None:
             #        print(f"Label: {label}")
 
-            generalCharacteristics = []
+            """  generalCharacteristics = []
             services = []
             amenidades = []
             exteriors = []
@@ -93,12 +91,13 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"Características generales", generalCharacteristics) if debug == True else None
             print(f"Servicios", services) if debug == True else None
             print(f"Amenidades", amenidades) if debug == True else None
-            print(f"Exteriors", exteriors) if debug == True else None
+            print(f"Exteriors", exteriors) if debug == True else None """
 
             # Latitude and longitud
 
             mapImg = soupInd.find("img", {"id": "static-map"})
             print(mapImg)
+
             src = mapImg.get('src')
             try:
                 startOfC = src.find('center=') + len('center')
@@ -112,7 +111,6 @@ def get_house_data(scraper, debug, db, longDescriptions):
             except:
                 latitudeClean = 0
                 longitude = 0
-
 
 
             # It will find the hgroup attribute and extract the span where the location is located
@@ -183,7 +181,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
                         final = re.sub('[^0-9]', '', new)
                         if final == "A estrenar":
                             final = 0
-                        houseCharacteristics[actualCharacteristics[i]] = int(final) if final else 0
+                        houseCharacteristics[actualCharacteristics[i]] = final if final else 0
                         # this final line sets a real item into the dictionary and not a miss-spelled word
 
             if isComplex[0] == True:
@@ -193,30 +191,27 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(houseCharacteristics) if debug == True else None
 
             # obtain long house description
-            """ if longDescriptions == True:
-                descriptionDirty = soupInd.find("div", id="longDescription")
-                print(descriptionDirty) """
+            descriptionDirty = soupInd.find("div", class_="sc-jwWbkn")
+            print(f"Description dirty: {descriptionDirty}")
+            descriptionDirty = descriptionDirty.replace("<br>", "")
+            description = descriptionDirty.replace('""', '')
+            print(f"Description clean: {description}")
 
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": houseLink,
                 "name": houseNameH1,
-                "price": int(housePrice),
+                "price": housePrice,
                 "zone": zone,
                 "city_hall": city_hall,
                 "latitude": latitudeClean,
                 "longitude": longitude,
                 "details": houseCharacteristics,
-                "characteristics": str(generalCharacteristics),
-                "amenities": str(amenidades),
-                "services": str(services),
-                "exteriors": str(exteriors),
-            }            
-            db.storeHouseInformation(houseData) if db != None else None
-
-            
+                "description": description,
+            }
             try:
-                print(houseData) if debug == True else None
                 db.storeHouseInformation(houseData) if db != None else None
             except:
                 pass
+
+           
