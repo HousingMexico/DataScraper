@@ -20,8 +20,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
         # obtain specific house links
-        links = soup.find_all('div', {"class": "sc-i1odl-0 dreQQz"})
-
+        links = soup.find_all('div', class_="PostingCardLayout-sc-i1odl-0")
         # loop through each div and obtain each individual house inforation
         for link in links:
 
@@ -30,7 +29,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
 
             # data-to-posting is the attribute that contains the link of individual homes
             # link of each individual house
-            houseLink = baseURL + link.get("data-to-posting")
+            houseLink = baseURL + str(link.get("data-to-posting"))
             print(f"LINK: {houseLink}") if debug == True else None
 
             # parse individual house website
