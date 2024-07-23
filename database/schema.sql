@@ -18,6 +18,6 @@ CREATE TABLE `houses` (
   `parking` int(9),
   `bedrooms` int(9),
   `years` int(9),
-  `description` varchar(550),
+  `description` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
