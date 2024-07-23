@@ -9,13 +9,15 @@ URL = 'https://www.inmuebles24.com/'
 def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 3):
+    for page in range(1, 5):
 
         # obtain website where houses are listed (20 houses per page)
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
 
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
+        if "Cloudflare" in soup.find("title").text:
+            print("Goddamn Cloudflare!")
 
         # obtain specific house links
         links = soup.find_all('div', class_="PostingCardLayout-sc-i1odl-0")
