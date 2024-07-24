@@ -44,8 +44,13 @@ def get_house_data(scraper, debug, db, longDescriptions):
             houseNameH1 = soupInd.find("h1").text
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
 
-            # obtain price (span) inside the div of the price item
-            housePrice = soupInd.find("div", class_="price-value").find("span")
+            houseprice = ""
+            try:
+                housePrice = soupInd.find("div", class_="price-value").find("span")
+                pass
+            except:
+                print("House is NOT an individual home") if debug == True else None
+                break
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
@@ -192,12 +197,17 @@ def get_house_data(scraper, debug, db, longDescriptions):
 
             print(houseCharacteristics) if debug == True else None
 
-            # obtain long house description
-            descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
-            print(f"Description dirty: {descriptionDirty}")
-            descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
-            description = descriptionPre.replace("br", "")
-            print(f"Description clean: {description}")
+            description = ""
+            try:
+                descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
+                print(f"Description dirty: {descriptionDirty}")
+                descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
+                descriptionPreDos = descriptionPre.replace("br", "")
+                description = descriptionPreDos.replace("nbsp", "")
+                #description = descriptionDirty.replace('""', '')
+                print(f"Description clean: {description}")
+            except:
+                break
 
             # register the house in the database if parameter is True in root's main.py
             houseData = {
