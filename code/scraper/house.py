@@ -24,7 +24,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
         #links = soup.find_all('div', class_="PostingCardLayout-sc-i1odl-0")
         
         # loop through each div and obtain each individual house inforation
-        for link in "abc":
+        for link in "a":
 
             # base URL where the route of the div will be added
             baseURL = 'https://www.inmuebles24.com'
@@ -35,7 +35,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             #print(f"LINK: {houseLink}") if debug == True else None
 
             # parse individual house website
-            house = scraper.get("https://www.inmuebles24.com/propiedades/clasificado/veclcain-preventa-de-casa-en-condominio-en-col.-el-recreo-65691891.html", params=params).text
+            house = scraper.get("https://www.inmuebles24.com/propiedades/clasificado/veclcain-casa-en-venta-en-pedregal-de-san-francisco-142444186.html", params=params).text
 
             # parse main HTML
             soupInd = BeautifulSoup(house, 'html.parser')
@@ -45,8 +45,13 @@ def get_house_data(scraper, debug, db, longDescriptions):
             houseNameH1 = soupInd.find("h1").text
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
 
-            # obtain price (span) inside the div of the price item
-            housePrice = soupInd.find("div", class_="price-value").find("span")
+            houseprice = ""
+            try:
+                housePrice = soupInd.find("div", class_="price-value").find("span")
+                pass
+            except:
+                print("House is NOT an individual home") if debug == True else None
+                break
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
@@ -194,13 +199,18 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(houseCharacteristics) if debug == True else None
 
             # obtain long house description
-            descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
-            print(f"Description dirty: {descriptionDirty}")
-            descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
-            description = descriptionPre.replace("br", "")
-            #description = descriptionDirty.replace('""', '')
-            print(f"Description clean: {description}")
-
+            description = ""
+            try:
+                descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
+                print(f"Description dirty: {descriptionDirty}")
+                descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
+                descriptionPreDos = descriptionPre.replace("br", "")
+                description = descriptionPreDos.replace("nbsp", "")
+                #description = descriptionDirty.replace('""', '')
+                print(f"Description clean: {description}")
+            except:
+                break
+                
             # register the house in the database if parameter is True in root's main.py
             houseData = {
                 "link": "aa",
