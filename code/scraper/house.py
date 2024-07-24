@@ -45,7 +45,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
 
             # obtain price (span) inside the div of the price item
-            housePrice = soupInd.find("div", {"class":"price-value"}).find("span")
+            housePrice = soupInd.find("div", class_="price-value").find("span")
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
@@ -193,23 +193,23 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(houseCharacteristics) if debug == True else None
 
             # obtain long house description
-            descriptionDirty = soupInd.find("div", class_="sc-jwWbkn")
+            descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
             print(f"Description dirty: {descriptionDirty}")
-            descriptionDirty = descriptionDirty.replace("<br>", "")
-            description = descriptionDirty.replace('""', '')
+            descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
+            description = descriptionPre.replace("br", "")
             print(f"Description clean: {description}")
 
             # register the house in the database if parameter is True in root's main.py
             houseData = {
-                "link": houseLink,
-                "name": houseNameH1,
-                "price": housePrice,
-                "zone": zone,
-                "city_hall": city_hall,
-                "latitude": latitudeClean,
-                "longitude": longitude,
+                "link": houseLink.strip(),
+                "name": houseNameH1.strip(),
+                "price": housePrice.strip(),
+                "zone": zone.strip(),
+                "city_hall": city_hall.strip(),
+                "latitude": latitudeClean.strip(),
+                "longitude": longitude.strip(),
                 "details": houseCharacteristics,
-                "description": description,
+                "description": description.strip(),
             }
             try:
                 db.storeHouseInformation(houseData) if db != None else None
