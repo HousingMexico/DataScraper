@@ -116,8 +116,8 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 print("Latitude: ", latitudeClean)
                 print("Longitude: ", longitude)
             except:
-                latitudeClean = 0
-                longitude = 0
+                latitudeClean = "0"
+                longitude = "0"
 
 
             # It will find the hgroup attribute and extract the span where the location is located
@@ -196,7 +196,6 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 continue # skip to next house (avoid database insertion)
 
             print(houseCharacteristics) if debug == True else None
-
             description = ""
             try:
                 descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
@@ -206,10 +205,11 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 description = descriptionPreDos.replace("nbsp", "")
                 #description = descriptionDirty.replace('""', '')
                 print(f"Description clean: {description}")
-            except:
+            except Exception as e:
+                print(f"An error occurred: {e}")
                 break
 
-            # register the house in the database if parameter is True in root's main.py
+
             houseData = {
                 "link": houseLink.strip(),
                 "name": houseNameH1.strip(),
@@ -221,9 +221,13 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 "details": houseCharacteristics,
                 "description": description.strip(),
             }
+
+
             try:
                 db.storeHouseInformation(houseData) if db != None else None
             except:
                 pass
+                print("No funciona"
+                )
 
            
