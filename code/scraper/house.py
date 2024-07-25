@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 
+
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
 params = {"js_render":"true"}
@@ -10,7 +11,7 @@ params = {"js_render":"true"}
 def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 5):
+    for page in range(1, 1000):
 
         # obtain website where houses are listed (20 houses per page)
         #driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html', params=params).text
@@ -38,6 +39,8 @@ def get_house_data(scraper, debug, db, longDescriptions):
             # parse individual house website
             #house = scraper.get(houseLink, params=params).text
             house = scraper.get(houseLink).text
+
+
 
             # parse main HTML
             soupInd = BeautifulSoup(house, 'html.parser')
@@ -201,7 +204,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(houseCharacteristics) if debug == True else None
             description = ""
             try:
-                descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
+                descriptionDirty = soupInd.find("div", class_="section-description").text
                 print(f"Description dirty: {descriptionDirty}")
                 descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
                 descriptionPreDos = descriptionPre.replace("br", "")
