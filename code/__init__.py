@@ -1,4 +1,6 @@
+#from zenrows import ZenRowsClient
 import cloudscraper
+
 from code.scraper.house import get_house_data
 from database import Database
 
@@ -10,6 +12,7 @@ class HousingMexico:
     def __init__(self, debug = True, useDB = False, longDescriptions = False):
 
         # this creates the scraper
+        #self.scraper = ZenRowsClient("84e2f89ab2e28c2b21846cb7f7644bab6f40db15")
         self.scraper = cloudscraper.create_scraper()
         print("Scraper has been initialized")
 

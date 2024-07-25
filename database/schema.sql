@@ -1,7 +1,5 @@
-# CREATE DATABASE
 CREATE DATABASE housingmexico;
-use housingmexico
-# CREATE TABLE
+USE housingmexico;
 CREATE TABLE `houses` (
   `id` int(9) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,

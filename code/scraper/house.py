@@ -4,6 +4,7 @@ import json
 
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
+params = {"js_render":"true"}
 
 # obtain house information
 def get_house_data(scraper, debug, db, longDescriptions):
@@ -12,6 +13,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
     for page in range(1, 5):
 
         # obtain website where houses are listed (20 houses per page)
+        #driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html', params=params).text
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
 
         # parse main HTML
@@ -34,6 +36,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"LINK: {houseLink}") if debug == True else None
 
             # parse individual house website
+            #house = scraper.get(houseLink, params=params).text
             house = scraper.get(houseLink).text
 
             # parse main HTML
