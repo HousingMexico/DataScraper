@@ -4,23 +4,26 @@ import json
 
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
+params = {"js_render":"true"}
 
 # obtain house information
 def get_house_data(scraper, debug, db, longDescriptions):
 
     # inmuebles24 shows estate on page index
-    for page in range(1, 100):
+    for page in range(1, 5):
 
-        print(page)
-
-        fullURL = URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html'
-        print(fullURL)
         # obtain website where houses are listed (20 houses per page)
+        #driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html', params=params).text
         driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
+
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
+        if "Cloudflare" in soup.find("title").text:
+            print("Goddamn Cloudflare!")
+
         # obtain specific house links
         links = soup.find_all('div', class_="PostingCardLayout-sc-i1odl-0")
+        
         # loop through each div and obtain each individual house inforation
         for link in links:
 
@@ -33,7 +36,9 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"LINK: {houseLink}") if debug == True else None
 
             # parse individual house website
+            #house = scraper.get(houseLink, params=params).text
             house = scraper.get(houseLink).text
+
             # parse main HTML
             soupInd = BeautifulSoup(house, 'html.parser')
 
@@ -42,20 +47,25 @@ def get_house_data(scraper, debug, db, longDescriptions):
             houseNameH1 = soupInd.find("h1").text
             print(f"HOUSENAME: {houseNameH1.strip()}") if debug == True else None
 
-            # obtain price (span) inside the div of the price item
-            housePrice = soupInd.find("div", {"class":"price-value"}).find("span")
+            houseprice = ""
+            try:
+                housePrice = soupInd.find("div", class_="price-value").find("span")
+                pass
+            except:
+                print("House is NOT an individual home") if debug == True else None
+                break
 
             # remove non-numbers (mainly MXN and numer commas)
             housePrice = re.sub('[^0-9]', '', housePrice.text.strip())
             print(f"HOUSEPRICE: {housePrice}") if debug == True else None
 
             # Find generalFeatures
-            dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
+            # dataSc = soupInd.find("script", text=re.compile('generalFeatures')).string
 
-            groupedData = re.search(r'(\{.*\})', dataSc).group(1)
-            jsonData = json.loads(groupedData)
+            # groupedData = re.search(r'(\{.*\})', dataSc).group(1)
+            # jsonData = json.loads(groupedData)
 
-            generalFeatures = jsonData.get('generalFeatures', {})
+            # generalFeatures = jsonData.get('generalFeatures', {})
 
             # OLD CODE, might be useful
             # generalCharacteristics = generalFeatures.get('Características generales', {})
@@ -68,7 +78,7 @@ def get_house_data(scraper, debug, db, longDescriptions):
             #    if label is not None:
             #        print(f"Label: {label}")
 
-            generalCharacteristics = []
+            """  generalCharacteristics = []
             services = []
             amenidades = []
             exteriors = []
@@ -91,12 +101,13 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"Características generales", generalCharacteristics) if debug == True else None
             print(f"Servicios", services) if debug == True else None
             print(f"Amenidades", amenidades) if debug == True else None
-            print(f"Exteriors", exteriors) if debug == True else None
+            print(f"Exteriors", exteriors) if debug == True else None """
 
             # Latitude and longitud
 
             mapImg = soupInd.find("img", {"id": "static-map"})
             print(mapImg)
+
             src = mapImg.get('src')
             try:
                 startOfC = src.find('center=') + len('center')
@@ -108,9 +119,8 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 print("Latitude: ", latitudeClean)
                 print("Longitude: ", longitude)
             except:
-                latitudeClean = 0
-                longitude = 0
-
+                latitudeClean = "0"
+                longitude = "0"
 
 
             # It will find the hgroup attribute and extract the span where the location is located
@@ -189,30 +199,38 @@ def get_house_data(scraper, debug, db, longDescriptions):
                 continue # skip to next house (avoid database insertion)
 
             print(houseCharacteristics) if debug == True else None
+            description = ""
+            try:
+                descriptionDirty = soupInd.find("div", {"id": "longDescription"}).text
+                print(f"Description dirty: {descriptionDirty}")
+                descriptionPre = re.sub('[^a-zA-Z0-9ñÑ ]', '', descriptionDirty)
+                descriptionPreDos = descriptionPre.replace("br", "")
+                description = descriptionPreDos.replace("nbsp", "")
+                #description = descriptionDirty.replace('""', '')
+                print(f"Description clean: {description}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                break
 
-            # obtain long house description
-            """ if longDescriptions == True:
-                descriptionDirty = soupInd.find("div", id="longDescription")
-                print(descriptionDirty) """
 
-            # register the house in the database if parameter is True in root's main.py
             houseData = {
-                "link": houseLink,
-                "name": houseNameH1,
-                "price": housePrice,
-                "zone": zone,
-                "city_hall": city_hall,
-                "latitude": latitudeClean,
-                "longitude": longitude,
+                "link": houseLink.strip(),
+                "name": houseNameH1.strip(),
+                "price": housePrice.strip(),
+                "zone": zone.strip(),
+                "city_hall": city_hall.strip(),
+                "latitude": latitudeClean.strip(),
+                "longitude": longitude.strip(),
                 "details": houseCharacteristics,
-                "characteristics": str(generalCharacteristics),
-                "amenities": str(amenidades),
-                "services": str(services),
-                "exteriors": str(exteriors),
+                "description": description.strip(),
             }
+
+
             try:
                 db.storeHouseInformation(houseData) if db != None else None
             except:
                 pass
+                print("No funciona"
+                )
 
            

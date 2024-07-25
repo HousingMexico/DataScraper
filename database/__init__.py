@@ -14,7 +14,7 @@ class Database:
             host=env.HOST,
             user=env.USER,
             password=env.PASSWORD,
-            database=env.DATABASE
+            database=env.DATABASE,
         )
 
         if (db.is_connected()):
@@ -52,25 +52,25 @@ class Database:
             "parking": detailsDict["parking"],
             "bedrooms": detailsDict["bedrooms"],
             "years": detailsDict["years"],
-            "characteristics": house["characteristics"],
-            "amenities": house["amenities"],
-            "services": house["services"],
-            "exteriors": house["exteriors"]
+            "description": house["description"]
         }
 
         # prepare SQL statement
         SQL = (
-            "INSERT INTO houses(name, link, zone, city_hall, latitude, longitude, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years, characteristics, amenities, services, exteriors)"
-            "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''),NULLIF(%s, ''))"
+            "INSERT INTO houses(name, link, zone, city_hall, latitude, longitude, price, size, built, fullbathrooms, halfbathrooms, parking, bedrooms, years, description)"
+            "VALUES (NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''), NULLIF(%s, ''),NULLIF(%s, ''))"
         )
         DATA = (details["name"], details["link"], details["zone"], details["city_hall"], details["latitude"], details["longitude"], details["price"], details["size"], details["built"],
-                details["fullbathrooms"], details["halfbathrooms"], details["parking"], details["bedrooms"], details["years"], details["characteristics"],
-                details["amenities"], details["services"], details["exteriors"])
+                details["fullbathrooms"], details["halfbathrooms"], details["parking"], details["bedrooms"], details["years"], details["description"])
 
         # on Mongoose, this is new Schema()
-        self.cursor.execute(SQL, DATA)
+        try:
+            self.cursor.execute(SQL, DATA)
 
-        # on Mongoose, this is data.save()
-        self.db.commit()
+            # on Mongoose, this is data.save()
+            self.db.commit()
+            print("[DATABASE] Value has been saved")
 
-        print("[DATABASE] Value has been saved")
+        except Exception as e:
+            print(e)
+
