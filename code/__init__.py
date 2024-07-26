@@ -10,7 +10,7 @@ from database import Database
 class HousingMexico:
     
     # initialize HousingMexico
-    def __init__(self, debug = True, useDB = False, longDescriptions = False, use_zenrows = False):
+    def __init__(self, debug = True, useDB = False, longDescriptions = False, use_zenrows = True):
 
         # this creates the scraper
         self.use_zenrows = use_zenrows

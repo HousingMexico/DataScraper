@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import re
-import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -8,7 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
-import time
 
 # URL to fetch information
 URL = 'https://www.inmuebles24.com/'
@@ -52,12 +50,13 @@ def get_house_data(scraper, debug, db, longDescriptions, use_zenrows):
             else:
                 house = scraper.get(houseLink).text
 
-            chrome_options = Options()
-            seleniumDriver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-            seleniumDriver.get(houseLink)
-
-
-
+            if use_zenrows:
+                pass
+            else:
+                chrome_options = Options()
+                seleniumDriver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),
+                                                  options=chrome_options)
+                seleniumDriver.get(houseLink)
 
             # parse main HTML
             soupInd = BeautifulSoup(house, 'html.parser')
@@ -125,12 +124,17 @@ def get_house_data(scraper, debug, db, longDescriptions, use_zenrows):
 
             # Latitude and longitud
 
-            mapImg = WebDriverWait(seleniumDriver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "img#static-map"))
-            )
+            if use_zenrows:
+                mapImg = soupInd.find("img", {"id": "static-map"})
+                src = mapImg.get('src')
+            else:
+                mapImg = WebDriverWait(seleniumDriver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "img#static-map"))
+                )
+                src = mapImg.get_attribute('src')
+
             print(mapImg)
 
-            src = mapImg.get_attribute('src')
             try:
                 startOfC = src.find('center=') + len('center')
                 endOfC = src.find('&', startOfC)
