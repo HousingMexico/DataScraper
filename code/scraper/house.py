@@ -15,14 +15,17 @@ URL = 'https://www.inmuebles24.com/'
 params = {"js_render":"true"}
 
 # obtain house information
-def get_house_data(scraper, debug, db, longDescriptions):
+def get_house_data(scraper, debug, db, longDescriptions, use_zenrows):
 
     # inmuebles24 shows estate on page index
     for page in range(1, 1000):
 
         # obtain website where houses are listed (20 houses per page)
-        #driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html', params=params).text
-        driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
+        if use_zenrows:
+            driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html',
+                                 params=params).text
+        else:
+            driver = scraper.get(URL + 'casas-en-venta-en-ciudad-de-mexico' + '-pagina-' + str(page) + '.html').text
 
         # parse main HTML
         soup = BeautifulSoup(driver, 'html.parser')
@@ -44,8 +47,10 @@ def get_house_data(scraper, debug, db, longDescriptions):
             print(f"LINK: {houseLink}") if debug == True else None
 
             # parse individual house website
-            #house = scraper.get(houseLink, params=params).text
-            house = scraper.get(houseLink).text
+            if use_zenrows:
+              house = scraper.get(houseLink, params=params).text
+            else:
+                house = scraper.get(houseLink).text
 
             chrome_options = Options()
             seleniumDriver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
